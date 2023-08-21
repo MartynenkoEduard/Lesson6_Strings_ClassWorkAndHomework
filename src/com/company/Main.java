@@ -1,10 +1,11 @@
 package com.company;
 
-import javax.swing.*;
-import java.sql.SQLOutput;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
+
 
     public static void main(String[] args) {
 //        classWorkExamples();
@@ -21,7 +22,17 @@ public class Main {
 //        homeWorkTask8();
 //        homeWorkTask9();
 //        homeWorkTask10();
-        homeWorkTask11();
+//        homeWorkTask11();
+//        coding("CAESAR", 3);
+//        de_Coding("FDHVDU", 3);
+//        shift_Cipher("CAESAR", 3);
+//        regularExpression();
+
+        getAlphabetForVigenereCoding(text);
+        fillVigenereArray();
+        genKey(numberOfSymbols);
+        cyphierVigenere(alphabetVigenere, key);
+        de_cyphierVigenere(cyphieredText, key);
     }
 
     public static void classWorkExamples() {
@@ -485,15 +496,150 @@ public class Main {
         str = str.trim();
         int counter = 0;
         for (int i = 0; i < str.length(); i++) {
-            if(str.charAt(i) == ' ') {
+            if (str.charAt(i) == ' ') {
                 counter++;
             }
-            if ( i == str.length() - 1)
+            if (i == str.length() - 1)
                 counter++;
-            }
+        }
         System.out.println("Quantity of words : " + counter);
+    }
+
+
+    /**
+     * use for coding symbol by Caesar algorithm
+     */
+    public static String coding(final String TEXT, final int KEY) {
+
+        return shift_Cipher(TEXT, KEY);
+    }
+
+    /**
+     * use for DE_coding symbol by Caesar algorithm
+     */
+    public static String de_Coding(final String TEXT, final int KEY) {
+
+        return shift_Cipher(TEXT, -KEY);
+    }
+
+
+    public static String shift_Cipher(final String text, final int KEY) {
+
+
+        String result = "";
+
+        for (int i = 0; i < text.length(); i++) {
+            result += (char) ((int) text.charAt(i) + KEY);
+        }
+        System.out.println(result);
+
+        return result;
+    }
+
+
+    public static void regularExpression() {
+        String text = " Alla Anatoliyvna Anton";
+        Pattern pattern = Pattern.compile("A.+a");
+        Matcher matcher = pattern.matcher(text);
+        matcher.find();
+
+        System.out.println(text.substring(matcher.start(), matcher.end()));
+
+        System.currentTimeMillis();
+    }
+
+    //////////////////////////////////////////////////////
+
+    public static String text = "Vigenere coding for training";
+
+    public static String getAlphabetForVigenereCoding(String text) {
+        String alphabet = "";
+        for (char c : text.toCharArray()) {
+            if (!alphabet.contains(c + "")) {
+                alphabet += c;
+            }
+        }
+//        System.out.println("alphabet : " + alphabet);
+        return alphabet;
+    }
+
+    public static String alphabetVigenere = getAlphabetForVigenereCoding(text);
+
+    public static char vigenereTable[][];
+
+    public static void fillVigenereArray() {
+        String text = "Vigenere coding for training";
+
+        vigenereTable = new char[alphabetVigenere.length()][alphabetVigenere.length()];
+        for (int column = 0; column < vigenereTable.length; column++) {
+            System.out.println();
+            for (int row = 0; row < vigenereTable[column].length; row++) {
+
+                vigenereTable[column][row] = alphabetVigenere.charAt((column + row) % alphabetVigenere.length());
+                System.out.print(vigenereTable[column][row]);
+            }
         }
     }
+
+    public static int numberOfSymbols = 5;
+
+    public static String key = "";
+    public static String genKey(int numberOfSymbols) {
+
+        String result = "";
+        Random random = new Random();
+        int index = 0;
+        char c = 0;
+        while (index != numberOfSymbols) {
+            do {
+                c = alphabetVigenere.charAt(random.nextInt(alphabetVigenere.length()));
+            } while (result.contains(c + ""));
+            result += c;
+            index++;
+        }
+
+        System.out.println(System.lineSeparator() + "Key :" + result);
+        key = result;
+        return result;
+    }
+
+    public static String cyphieredText = "";
+
+    public static String cyphierVigenere(final String alphabetVigenere, String key) {
+        String result = "";
+        for (int i = 0; i < text.length(); i++) {
+            int posH = alphabetVigenere.indexOf(text.charAt(i));
+            int posV = alphabetVigenere.indexOf(key.charAt(i % key.length()));
+            result += vigenereTable[posH][posV];
+        }
+        System.out.println(System.lineSeparator() + "Cyphiered text:  " + result);
+        cyphieredText = result;
+        return result;
+
+    }
+
+    public static String de_cyphierVigenere(String cyphieredText, String key) {
+        String result = "";
+        int posH = 0;
+        int posV = 0;
+
+        for (int i = 0; i < text.length(); i++) {
+            posH = alphabetVigenere.indexOf(key.charAt(i % key.length()));
+            for (int j = 0; j < alphabetVigenere.length(); j++) {
+                if ( vigenereTable[posH][j] == cyphieredText.charAt(i)) {
+                    posV = j;}
+            }
+            result += vigenereTable[0][posV];
+        }
+        System.out.println("Text :  " + text);
+        System.out.println("Decrypted text:  " + result);
+        return result;
+    }
+
+
+}
+
+
 
 
 
